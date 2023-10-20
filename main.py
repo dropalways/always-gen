@@ -12,7 +12,7 @@ import time
 import threading
 
 
-def listener(test, message):
+def listener(test, message, driver):
     regex = r"\d{6}"
     WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "VerificationCode")))
@@ -35,7 +35,7 @@ def listener(test, message):
         print("Couldn't find the security code from\n" + message['text'])
 
 
-def makeaccount():
+def makeaccount(driver):
     test = Email()
 
     test.register()
@@ -73,18 +73,18 @@ def makeaccount():
         EC.presence_of_element_located((By.ID, "BirthDay")))
     select_element = driver.find_element(By.ID, 'BirthDay')
     select = Select(select_element)
-    select.select_by_index(12)
+    select.select_by_index(random.randint(1, 28))
 
     select_element = driver.find_element(By.ID, 'BirthMonth')
     select = Select(select_element)
-    select.select_by_index(9)
+    select.select_by_index(random.randint(1, 12))
 
     year = driver.find_element(By.ID, "BirthYear")
-    year.send_keys("2001")
+    year.send_keys(str(random.randint(1905, 2004)))
     ActionChains(driver)\
         .send_keys(Keys.RETURN)\
         .perform()
-    test.start(lambda message: listener(test, message))
+    test.start(lambda message: listener(test, message, driver))
     print("\nWaiting for new emails...")
 
     emailandpass = test.address + ":" + passwordgen
@@ -96,17 +96,20 @@ def makeaccount():
         time.sleep(1)
 
 
-driver = webdriver.Chrome()
-driver.get(r"https://www.xbox.com/en-US/auth/msa?action=logIn&returnUrl=https%3A%2F%2Fwww.xbox.com%2Fen-US%2F&ru=https%3A%2F%2Fwww.xbox.com%2Fen-US%2F")
-title = driver.title
-
-time.sleep(2)
-
-if driver.title == "Sign in to your Microsoft account":
-    print("Loaded page")
-    driver.find_element(By.ID, "signup").click()
-    WebDriverWait(driver, 10).until(EC.title_is("Create account"))
+def main():
+    driver = webdriver.Chrome()
+    driver.get(r"https://xbox.com")
+    WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div/div[2]/div/div/div/header/div/div/div[4]/div[2]/div/a/div/div[1]'))).click()
+    if driver.title == "Sign in to your Microsoft account":
+        print("Loaded page")
+        driver.find_element(By.ID, "signup").click()
+        WebDriverWait(driver, 10).until(EC.title_is("Create account"))
     if driver.title == "Create account":
-        makeaccount()
-else:
-    print("Page not loaded correctly")
+        makeaccount(driver)
+    else:
+        print("Page not loaded correctly")
+
+
+if __name__ == "__main__":
+    main()
