@@ -4,6 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver import Keys, ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
+from selenium.common.exceptions import TimeoutException
 import random
 import string
 from mailtm import Email
@@ -87,12 +88,17 @@ def makeaccount(driver):
         .perform()
     test.start(lambda message: listener(test, message, driver))
     print("\nWaiting for new emails...")
-
-    emailandpass = test.address + ":" + passwordgen
-    print("Added account details to accounts.txt")
-    with open("accounts.txt", "a") as file:
-        file.write(emailandpass + "\n")
-
+    try:
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, f'input[id*="wlspispHIPPhoneInput"]')))
+        print("Change your ip address to keep generating")
+    except TimeoutException:
+        print("Didnt ask for a phone number")
+        emailandpass = test.address + ":" + passwordgen
+        print("Added account details to accounts.txt")
+        with open("accounts.txt", "a") as file:
+            file.write(emailandpass + "\n")
+        pass
     while True:
         time.sleep(1)
 
