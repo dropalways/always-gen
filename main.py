@@ -27,6 +27,7 @@ def listener(test, message, driver):
         ActionChains(driver)\
             .send_keys(Keys.RETURN)\
             .perform()
+
         print("do the captcha yourself :)")
         threading.Thread(target=test.stop).start()
         print("Stopped listening for emails...")
@@ -91,9 +92,22 @@ def makeaccount(driver):
     print("Added account details to accounts.txt")
     with open("accounts.txt", "a") as file:
         file.write(emailandpass + "\n")
-
-    while True:
+    working = False
+    while working == False:
         time.sleep(1)
+        if driver.title == "Add security info":
+            print("Change your IP to generate more accounts")
+            print("Deleting this accounts information")
+            with open("accounts.txt", "r") as f:
+                data = f.readlines()
+
+            with open("accounts.txt", "w") as f:
+
+                for line in data:
+
+                    if line.strip("\n") != emailandpass:
+                        f.write(line)
+                        working = True
 
 
 def main():
