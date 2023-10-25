@@ -12,7 +12,7 @@ import re
 import time
 import threading
 
-# Created by always on 2023-10-20 11:09:48
+# Created by always
 
 
 def listener(test, message, driver):
