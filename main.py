@@ -5,14 +5,13 @@ from selenium.webdriver import Keys, ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
 from selenium.common.exceptions import TimeoutException
+import pyperclip
 import random
 import string
 from mailtm import Email
 import re
 import time
 import threading
-
-# Created by always on 2023-10-20 11:09:48
 
 
 def listener(test, message, driver):
@@ -100,6 +99,14 @@ def makeaccount(driver):
         print("Added account details to accounts.txt")
         with open("accounts.txt", "a") as file:
             file.write(emailandpass + "\n")
+            copytoclipboard = input("Do you wanna copy to clipboard? (y/n): ")
+            if copytoclipboard == "y":
+                pyperclip.copy(emailandpass)
+                print(f"Copied {emailandpass} to clipboard")
+            elif copytoclipboard == "n":
+                pass
+            else:
+                print("Error occurred handling your input... didnt copy to clipboard")
         pass
     while True:
         time.sleep(1)
@@ -110,6 +117,7 @@ def main():
     driver.get(r"https://xbox.com")
     WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div/div[2]/div/div/div/header/div/div/div[4]/div[2]/div/a/div/div[1]'))).click()
+    time.sleep(1)
     if driver.title == "Sign in to your Microsoft account":
         print("Loaded page")
         driver.find_element(By.ID, "signup").click()
