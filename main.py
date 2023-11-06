@@ -20,12 +20,12 @@ def listener(test, message, driver):
     regex = r"\d{6}"
     WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "VerificationCode")))
-    print("Content: " + (message['text']
-          if message['text'] else message['html']))
+    (message['text']
+     if message['text'] else message['html'])
     match = re.search(regex, message['text'])
     if match:
         sec_code = match.group()
-        print(f"Got security code: {sec_code} from email")
+        print(f"\nGot security code: {sec_code} from email")
         securitycode = driver.find_element(By.ID, "VerificationCode")
         securitycode.send_keys(sec_code)
         ActionChains(driver)\
@@ -101,6 +101,7 @@ def makeaccount(driver):
         print("Added account details to accounts.txt")
         with open("accounts.txt", "a") as file:
             file.write(emailandpass + "\n")
+            time.sleep(5)
             copytoclipboard = input("Do you wanna copy to clipboard? (y/n): ")
             if copytoclipboard == "y":
                 pyperclip.copy(emailandpass)
